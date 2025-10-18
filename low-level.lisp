@@ -73,7 +73,8 @@
                                      :5.0 :5.1 :5.2
                                      ;; including patch level starting at 5.3
                                      :5.3.0 :5.3.1
-                                     :5.4.0 :5.4.1 :5.4.2 :5.4.3)
+                                     :5.4.0 :5.4.1 :5.4.2 :5.4.3
+                                     :6.0.0 :6.0.1 :6.0.2)
                           when (cl:eql i a)
                             do (cl:setf keep cl:t)
                           when keep
@@ -100,7 +101,9 @@
         (:5.3.0+ (cl:member *version* (vrange :5.3.0)))
         (:5.4.0+ (cl:member *version* (vrange :5.4.0)))
         (:5.4.3+ (cl:member *version* (vrange :5.4.3)))
-        (:>5.4 ())))))
+        (:>5.4 (cl:error "fix this"))
+        (:6.0.0+ (cl:member *version* (vrange :6.0.0)))
+        (:>6.0 ())))))
 
 (cl:eval-when (:compile-toplevel)
   (cl:setf %compiled% cl:t)
@@ -115,8 +118,10 @@
                      (5 (cl:or (cl:<= 0 minor 3)
                                (cl:and (cl:= minor 4)
                                        (cl:<= 0 patch 3))))
+                     (6 (cl:or (cl:and (cl:= minor 0)
+                                       (cl:<= 0 patch 2))))
                      (cl:t ()))
-          (cl:error "trying to link against unsupported version of assimp. 3.0-5.4.3 supported, got version ~a.~a~@[.~a~]"
+          (cl:error "trying to link against unsupported version of assimp. 3.0-6.0.2 supported, got version ~a.~a~@[.~a~]"
                     major minor patch))
         (cl:setf %version% new-version)
         (cl:setf %cflags% (cl:when (cl:or (cl:> major 5)
@@ -147,8 +152,10 @@
                      (5 (cl:or (cl:<= 0 minor 3)
                                (cl:and (cl:= minor 4)
                                        (cl:<= 0 patch 3))))
+                     (6 (cl:or (cl:and (cl:= minor 0)
+                                       (cl:<= 0 patch 2))))
                      (cl:t ()))
-          (cl:error "trying to link against unsupported version of assimp. 3.0-5.4.3 supported, got version ~a.~a"
+          (cl:error "trying to link against unsupported version of assimp. 3.0-6.0.2 supported, got version ~a.~a"
                     major minor))
         (cl:let ((cflags (cl:when (%v= :5.1+)
                            (ai-get-compile-flags))))
@@ -473,7 +480,9 @@ clause at compile time will be used."
   (:5.4.3+ (:ai-texture-type-maya-base 22))
   (:5.4.3+ (:ai-texture-type-maya-specular 23))
   (:5.4.3+ (:ai-texture-type-maya-specular-color 24))
-  (:5.4.3+ (:ai-texture-type-maya-specular-roughness 25)))
+  (:5.4.3+ (:ai-texture-type-maya-specular-roughness 25))
+  (:6.0.0+ (:ai-texture-type-anisotropy 26))
+  (:6.0.0+ (:ai-texture-type-gltf-metallic-roughness 27)))
 
 (cffi:defcstruct ai-material-property ;; 3.0+
   (m-key (:struct ai-string))
@@ -844,7 +853,9 @@ clause at compile time will be used."
   (p-key :string)
   (type :unsigned-int)
   (index :unsigned-int)
-  (:4.0-5.4.2 (p-out (:pointer ai-real))
+  (:6.0.0+ (p-out (:pointer ai-real))
+   :5.4.3 (p-out (:pointer :float))
+   :4.0-5.4.2 (p-out (:pointer ai-real))
    :3.0+ (p-out (:pointer :float)))
   (p-max (:pointer :unsigned-int)))
 
@@ -854,7 +865,9 @@ clause at compile time will be used."
   (p-key :string)
   (type :unsigned-int)
   (index :unsigned-int)
-  (:4.0-5.4.2 (p-out (:pointer ai-real))
+  (:6.0.0+ (p-out (:pointer ai-real))
+   :5.4.3 (p-out (:pointer :float))
+   :4.0-5.4.2 (p-out (:pointer ai-real))
    :3.0+ (p-out (:pointer :float))))
 
 (cffi:defcfun ("aiGetVersionRevision" ai-get-version-revision) :unsigned-int)

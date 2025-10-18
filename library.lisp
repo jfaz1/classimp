@@ -5,6 +5,7 @@
   (:windows (:or "assimp.dll"
                  "libassimp.dll"
                  "libassimp-5.dll"
+                 "libassimp-6.dll"
                  ;; locally built assimp has lots of dll names
                  ;; depending on what version of VC it was compiled
                  ;; with :/ please send a pr or bug report if you see
@@ -24,7 +25,8 @@
                  #-(or x86-64 64-bit)
                  "assimp32.dll"
                  ));; :calling-convention :stdcall ?
-  (:unix (:or "libassimp.so.5"
+  (:unix (:or "libassimp.so.6"
+              "libassimp.so.5"
               "libassimp.so.4"
               "libassimp.so.3" "libassimp3.0.so"
               "libassimp.so")))

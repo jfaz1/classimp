@@ -580,7 +580,10 @@
 (defparameter *translate-anim-node-ticks-per-second* 0.0)
 
 (defun translate-ai-vector-key (k)
-  (with-foreign-slots* ((%ai:m-time (:pointer %ai:m-value)) k
+  (with-foreign-slots* ((%ai:m-time
+                         (:pointer %ai:m-value)
+                         %ai:m-interpolation)
+                        k
                         (:struct %ai:ai-vector-key))
     (make-instance 'vector-key
                    'time (if (or (not *loader-translate-times*)
@@ -592,7 +595,10 @@
                    'interpolation (%ai:v>= (5 4 3) %ai:m-interpolation))))
 
 (defun translate-ai-quaternion-key (k)
-  (with-foreign-slots* ((%ai:m-time (:pointer %ai:m-value)) k
+  (with-foreign-slots* ((%ai:m-time
+                         (:pointer %ai:m-value)
+                         %ai:m-interpolation)
+                        k
                         (:struct %ai:ai-quat-key))
     (make-instance 'quat-key
                    'time (if (or (not *loader-translate-times*)
@@ -802,7 +808,8 @@
                  ;; work around bug in ai gltf importer
                  ;; https://github.com/assimp/assimp/issues/2997
                  (when (and (member *wrapper-version*
-                                    '(:|5.0| :|5.1| :|5.2| :|5.3| :|5.3.1|))
+                                    '(:|5.0| :|5.1| :|5.2| :|5.3| :|5.3.1|
+                                      :|6.0.0| :|6.0.1| :|6.0.2|))
                             (= %ai:m-data-length 1)
                             (eql type :uint)
                             (eql %ai:m-type :ai-pti-buffer))
